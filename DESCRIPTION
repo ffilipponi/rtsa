@@ -1,0 +1,26 @@
+Package: rtsa
+Version: 0.1
+Date: 2017-09-01
+Title: Raster Time Series Analysis
+Authors@R: c(person("Federico", "Filipponi", role = c("aut", "cre"),
+                     email = "federico.filipponi@gmail.com"))
+Author: Federico Filipponi [aut, cre],
+Maintainer: Federico Filipponi <federico.filipponi@gmail.com>
+Depends: 
+    R (>= 3.1.0), 
+    raster,
+    rts
+Imports: 
+    parallel,
+    doParallel,
+    sinkr,
+    remote, 
+    kohonen, 
+    imputeTS, 
+    bfast, 
+    stlplus
+Suggests: 
+    rasterVis
+Description: The package provides a collection of analytics to perform spatio-temporal analysis from raster time series
+License: GPL (>= 3)
+URL: https://github.com/ffilipponi/rtsa
