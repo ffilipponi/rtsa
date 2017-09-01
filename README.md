@@ -33,6 +33,8 @@ Since some techniques for spatio-temporal analysis can not deal with missing val
 * X-11
 * X-13-ARIMA seasonal adjustment
 
+### Installation
+
 **To load** (using `devtools`):
 ```r
 library(devtools)
