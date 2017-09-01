@@ -14,10 +14,11 @@ Imports:
     parallel,
     doParallel,
     sinkr,
-    remote, 
-    kohonen, 
-    imputeTS, 
-    bfast, 
+    remote,
+    kohonen,
+    gapfill,
+    imputeTS,
+    bfast,
     stlplus
 Suggests: 
     rasterVis
