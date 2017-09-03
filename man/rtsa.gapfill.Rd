@@ -7,26 +7,28 @@
 rtsa.gapfill(x, rastermask = NULL, method, cores = 1L, verbose = FALSE)
 }
 \arguments{
-\item{x}{Input raster time series as \code{\link{RasterStackTS}} or \code{\link{RasterBrickTS}} object}
+\item{x}{Input raster time series as \code{\linkS4class{RasterStackTS}} or \code{\linkS4class{RasterBrickTS}} object}
 
-\item{rastermask}{A \code{\link{RasterLayer}} to use as a mask. If not set
+\item{rastermask}{A \code{\linkS4class{RasterLayer}} to use as a mask. If not set
 a raster mask is computed to remove all pixels with less than two values in temporal profiles}
 
 \item{method}{Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. 
 Accepts the following input:
-\tab \code{"linear"} \tab for linear interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stats]{approxfun}}
-\tab \code{"spline"} \tab for spline interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stats]{splinefun}}
-\tab \code{"stine"} \tab for stine interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stinepack]{stinterp}}
-\tab \code{"dineof"} \tab for dineof interpolation using \code{\link[sinkr]{dineof}}
-\tab \code{"gapfill"} \tab for gapfill interpolation using \code{\link[gapfill]{gapfill}}}
+\tabular{lll}{
+\tab \code{"linear"} \tab for linear interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stats]{approxfun}}\cr
+\tab \code{"spline"} \tab for spline interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stats]{splinefun}}\cr
+\tab \code{"stine"} \tab for stine interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stinepack]{stinterp}}\cr
+\tab \code{"dineof"} \tab for dineof interpolation using \code{\link[sinkr]{dineof}}\cr
+\tab \code{"gapfill"} \tab for gapfill interpolation using \code{\link[gapfill]{gapfill}}
+}}
 
-\item{codes}{Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for 
+\item{cores}{Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for 
 singlecore processing.}
 
 \item{...}{Additional arguments}
 }
 \value{
-Object of class \code{\link{RasterBrickTS}} with gap-filled pixels
+Object of class \code{\linkS4class{RasterBrickTS}} with gap-filled pixels
 }
 \description{
 This function perform gap-filling of gappy raster time series
@@ -35,13 +37,14 @@ This function perform gap-filling of gappy raster time series
 
 }
 \examples{
-#' \dontrun{
+\dontrun{
 ## create raster time series using the 'pacificSST' data from 'remote' package
 require(remote)
 
 data(pacificSST)
 pacificSST[which(getValues(pacificSST == 0))] <- NA # set NA values
-rasterts <- rts(pacificSST, seq(as.Date('1982-01-15'), as.Date('2010-12-15'), 'months')) # create rts object
+# create rts object
+rasterts <- rts(pacificSST, seq(as.Date('1982-01-15'), as.Date('2010-12-15'), 'months'))
 
 ## generate raster mask
 raster_mask <- pacificSST[[1]] # create raster mask
@@ -50,8 +53,9 @@ raster_mask[which(is.na(getValues(pacificSST[[1]])))] <- 0 # set raster mask val
 
 ## randomly remove values from cells in rts object
 frac_gaps <- 0.5 # the fraction of data with NaNs
-temporal_cells <- as.integer(ncell(rasterts) * nlayers(rasterts)) # number of total cells in the rts
-na_cells <- sort(unique(sample.int(temporal_cells, (temporal_cells * frac_gaps)))) # define random position of cells to be set to NaN
+temporal_cells <- as.integer(ncell(rasterts) * nlayers(rasterts)) # number of total cells in rts
+# define random position of cells to be set to NaN
+na_cells <- sort(unique(sample.int(temporal_cells, (temporal_cells * frac_gaps))))
 gappy_values <- as.vector(getValues(rasterts)) # extract raster values
 gappy_values[na_cells] <- NA # set NA to random positions
 rasterts_gappy <- setValues(rasterts, values=gappy_values) # set NA to pixels

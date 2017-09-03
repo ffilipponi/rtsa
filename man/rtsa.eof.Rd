@@ -9,41 +9,44 @@ rtsa.eof(rasterts, rastermask = NULL, nu = NULL, gapfill = "none",
   verbose = FALSE)
 }
 \arguments{
-\item{rasterts}{Input raster time series as \code{\link{RasterStackTS}} or \code{\link{RasterBrickTS}} object}
+\item{rasterts}{Input raster time series as \code{\linkS4class{RasterStackTS}} or \code{\linkS4class{RasterBrickTS}} object}
 
-\item{rastermask}{Either a \code{\link{RasterLayer}} or "compute". Raster layer to use as a mask. When "compute" 
+\item{rastermask}{Either a \code{\linkS4class{RasterLayer}} or "compute". Raster layer to use as a mask. When "compute" 
 is set raster mask is computed to remove all pixels with incomplete time series}
 
 \item{nu}{Numeric. Defines the number of EOFs to return. Defaults to return the full set of EOFs}
+
+\item{gapfill}{Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. Accepts argument supported as method in function \code{\link[rtsa]{rtsa.gapfill}}}
 
 \item{...}{Additional arguments to be passed through to function \code{\link{eof}}}
 }
 \value{
 Object of class \code{\link{EOFstack}} containing the following components:
-\tabular{r11}
-\tab \code{eof} \tab EOF modes as \code{\link{RasterBrick}} object
-\tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\link{xts}} object
-\tab \code{total_variance} \tab Numeric. Total variance of input raster time series
-\tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOF mode with 
-respect to the total variance of input raster time series
-\tab \code{center} \tab Center values from each pixel temporal profile as \code{\link{RasterLayer}} object (only computed if \code{centered = TRUE})
-\tab \code{scale} \tab Scale values from each pixel temporal profile as \code{\link{RasterLayer}} object (only computed if \code{scaled = TRUE})
+\tabular{rll}{
+\tab \code{eof} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
+\tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr
+\tab \code{total_variance} \tab Numeric. Total variance of input raster time series\cr
+\tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOF mode with respect to the total variance of input raster time series\cr
+\tab \code{center} \tab Center values from each pixel temporal profile as \code{\linkS4class{RasterLayer}} object (only computed if \code{centered = TRUE})\cr
+\tab \code{scale} \tab Scale values from each pixel temporal profile as \code{\linkS4class{RasterLayer}} object (only computed if \code{scaled = TRUE})
+}
 }
 \description{
 This function conducts an Empirical Orthogonal Function analysis (EOF) via a covariance matrix 
-(cov4gappy function) using \code{\link[sinkr]} package especially designed to handle gappy raster time series
+(cov4gappy function) using "sinkr" package especially designed to handle gappy raster time series
 }
 \details{
 
 }
 \examples{
-#' \dontrun{
+\dontrun{
 ## create raster time series using the 'pacificSST' data from 'remote' package
 require(remote)
 
 data(pacificSST)
 pacificSST[which(getValues(pacificSST == 0))] <- NA # set NA values
-rasterts <- rts(pacificSST, seq(as.Date('1982-01-15'), as.Date('2010-12-15'), 'months')) # create rts object
+# create rts object
+rasterts <- rts(pacificSST, seq(as.Date('1982-01-15'), as.Date('2010-12-15'), 'months'))
 
 ## generate raster mask
 raster_mask <- pacificSST[[1]] # create raster mask
@@ -54,10 +57,12 @@ raster_mask[which(is.na(getValues(pacificSST[[1]])))] <- 0 # set raster mask val
 # compute the first 10 EOFs
 eof_result <- rtsa.eof(rasterts=rasterts, nu=10)
 # recursively compute the first 10 EOFs using raster mask
-eof_result_recursive <- rtsa.eof(rasterts=rasterts, rastermask=raster_mask, nu=10, recursive=TRUE)
-# compute the first 10 EOFs applying centering, scaling and raster mask computing before eof computation
-eof_result_masked <- rtsa.eof(rasterts=rasterts, rastermask="compute", nu=10, centered=TRUE, scaled=TRUE)
+eof_result_recursive <- rtsa.eof(rasterts=rasterts, rastermask=raster_mask, nu=10, recursive=T)
+# compute the first 10 EOFs applying centering, scaling 
+# and raster mask computing before eof computation
+eof_res_masked <- rtsa.eof(rasterts=rasterts, rastermask="compute", nu=10, centered=T, scaled=T)
 }
+
 }
 \references{
 Bjoernsson, H. and Venegas, S.A. (1997). "A manual for EOF and SVD 
