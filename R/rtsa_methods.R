@@ -6,6 +6,8 @@
 
 #######################################################################
 
+#' @exportMethod nlayers ncol nrow ncell setValues getValues
+
 # create function to read number of layers from RasterBrickTS object
 setMethod('nlayers', signature(x='RasterBrickTS'),
           function(x){

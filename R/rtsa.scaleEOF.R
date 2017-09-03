@@ -11,19 +11,19 @@
 #' @description This function rescale resulting spatial modes generated from Empirical Orthogonal Function analysis (EOF)
 #' in the range between -1 and 1
 #' 
-#' @param x Input \code{\link{EOFStack}} object generated using \code{\link[rtsa]{rtsa.eof}}
+#' @param x Input \code{\linkS4class{EOFStack}} object generated using \code{\link[rtsa]{rtsa.eof}}
 #' @param cut Numeric. Defines the percentile to be used to scale each EOFs. Default is set to 1 (1st and 99th percentiles)
 #' @param method Character. Method used to scale EOF modes. Only default \code{"percentile"} is supported
 #' 
-#' @return Updates the 'eof' slot in the object of class \code{\link{EOFstack}} containing the following components:
-#' \tabular{r11}
-#' \tab \code{eof} \tab Scaled EOF modes as \code{\link{RasterBrick}} object
-#' \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\link{xts}} object
-#' \tab \code{total_variance} \tab Numeric. Total variance of input raster time series
-#' \tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOF mode with 
-#' respect to the total variance of input raster time series
-#' \tab \code{center} \tab Center values from each pixel temporal profile as \code{\link{RasterLayer}} object (only computed if \code{centered = TRUE})
-#' \tab \code{scale} \tab Scale values from each pixel temporal profile as \code{\link{RasterLayer}} object (only computed if \code{scaled = TRUE})
+#' @return Updates the 'eof' slot in the object of class \code{\linkS4class{EOFstack}} containing the following components:
+#' \tabular{lll}{
+#' \tab \code{eof} \tab Scaled EOF modes as \code{\linkS4class{RasterBrick}} object\cr
+#' \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr
+#' \tab \code{total_variance} \tab Numeric. Total variance of input raster time series\cr
+#' \tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOF mode with respect to the total variance of input raster time series\cr
+#' \tab \code{center} \tab Center values from each pixel temporal profile as \code{\linkS4class{RasterLayer}} object (only computed if \code{centered = TRUE})\cr
+#' \tab \code{scale} \tab Scale values from each pixel temporal profile as \code{\linkS4class{RasterLayer}} object (only computed if \code{scaled = TRUE})
+#' }
 #' 
 #' @details 
 #' 
@@ -40,6 +40,8 @@
 #' ## Scale EOF modes by clipping the distribution between 5th and 95th percentile
 #' scaled_eof <- rtsa.scaleEOF(x=eof_result, cut=5)
 #' }
+#' 
+#' @import raster rts
 #' 
 #' @export
 
