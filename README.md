@@ -49,3 +49,7 @@ install_github("ffilipponi/rtsa")
 ### License
 
 Licensed under the GNU General Public License, Version 3.0: https://www.gnu.org/licenses/gpl-3.0.html
+
+### Funding
+
+The ECOPOTENTIAL project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 641762
