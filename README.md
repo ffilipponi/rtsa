@@ -27,7 +27,7 @@ Since some techniques for spatio-temporal analysis can not deal with missing val
 ### The following analytical methods will be supported soon:
 
 * Empirical Orthogonal Teleconnections
-* Self Organized Maps
+* Self Organizing Maps
 * Seasonal Trend Decomposition using Loess
 * Breaks For Additive Season and Trend, 
 * X-11
