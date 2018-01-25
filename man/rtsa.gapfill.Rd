@@ -19,7 +19,6 @@ Accepts the following input:
 \tab \code{"spline"} \tab for spline interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stats]{splinefun}}\cr
 \tab \code{"stine"} \tab for stine interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stinepack]{stinterp}}\cr
 \tab \code{"dineof"} \tab for dineof interpolation using \code{\link[sinkr]{dineof}}\cr
-\tab \code{"gapfill"} \tab for gapfill interpolation using \code{\link[gapfill]{gapfill}}
 }}
 
 \item{cores}{Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for 
@@ -73,9 +72,6 @@ rasterts_stine <- rtsa.gapfill(rasterts_gappy, rastermask=raster_mask, method="s
 
 # using dineof interpolation and raster mask
 rasterts_dineof <- rtsa.gapfill(rasterts_gappy, rastermask=raster_mask, method="dineof")
-
-# using gapfill interpolation and raster mask
-rasterts_gapfill <- rtsa.gapfill(rasterts_gappy, rastermask=raster_mask, method="gapfill")
 }
 
 }
@@ -83,7 +79,7 @@ rasterts_gapfill <- rtsa.gapfill(rasterts_gappy, rastermask=raster_mask, method=
 
 }
 \seealso{
-\code{\link[imputeTS]{na.interpolation}} \code{\link[sinkr]{dineof}}, \code{\link[gapfill]{gapfill}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
+\code{\link[imputeTS]{na.interpolation}} \code{\link[sinkr]{dineof}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
 }
 \author{
 Federico Filipponi

@@ -6,7 +6,7 @@
 \usage{
 rtsa.eof(rasterts, rastermask = NULL, nu = NULL, gapfill = "none",
   centered = TRUE, scaled = FALSE, method = "svds", recursive = FALSE,
-  verbose = FALSE)
+  cores = 1L, verbose = FALSE)
 }
 \arguments{
 \item{rasterts}{Input raster time series as \code{\linkS4class{RasterStackTS}} or \code{\linkS4class{RasterBrickTS}} object}
@@ -18,12 +18,14 @@ is set raster mask is computed to remove all pixels with incomplete time series}
 
 \item{gapfill}{Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. Accepts argument supported as method in function \code{\link[rtsa]{rtsa.gapfill}}}
 
-\item{...}{Additional arguments to be passed through to function \code{\link{eof}}}
+\item{cores}{Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for singlecore processing. Applies only to the masking step.}
+
+\item{...}{Additional arguments to be passed through to function \code{\link[sinkr]{eof}}}
 }
 \value{
 Object of class \code{\link{EOFstack}} containing the following components:
 \tabular{rll}{
-\tab \code{eof} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
+\tab \code{eof.modes} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
 \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr
 \tab \code{total_variance} \tab Numeric. Total variance of input raster time series\cr
 \tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOF mode with respect to the total variance of input raster time series\cr
@@ -50,6 +52,7 @@ rasterts <- rts(pacificSST, seq(as.Date('1982-01-15'), as.Date('2010-12-15'), 'm
 
 ## generate raster mask
 raster_mask <- pacificSST[[1]] # create raster mask
+names(raster_mask) <- "mask"
 values(raster_mask) <- 1 # set raster mask values
 raster_mask[which(is.na(getValues(pacificSST[[1]])))] <- 0 # set raster mask values
 
@@ -69,9 +72,9 @@ Bjoernsson, H. and Venegas, S.A. (1997). "A manual for EOF and SVD
 analyses of climate data", McGill University, CCGCR Report No. 97-1, 
 Montreal, Quebec, 52pp.
 
-Taylor, Marc H., Martin Losch, Manfred Wenzel, Jens Schroeter (2013). 
+Marc, T.H., Losch, M., Wenzel, M., Schroeter, J. (2013). 
 On the Sensitivity of Field Reconstruction and Prediction Using 
-Empirical Orthogonal Functions Derived from Gappy Data. J. Climate, 
+Empirical Orthogonal Functions Derived from Gappy Data. Journal of Climate, 
 26, 9194-9205. \href{http://dx.doi.org/10.6084/m9.figshare.732650}{pdf}
 }
 \seealso{
