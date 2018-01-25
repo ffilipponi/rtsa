@@ -23,10 +23,14 @@ Since some techniques for spatio-temporal analysis can not deal with missing val
 
 * Empirical Orthogonal Function
 * Empirical Orthogonal Teleconnections
-* Self Organizing Maps
 * Seasonal Trend Decomposition using Loess
 * X-11
 * X-13-ARIMA seasonal adjustment
+* Mann-Kendall trend test
+
+### The following analytical methods will be supported soon:
+
+* Self Organizing Maps
 
 ### Installation
 
