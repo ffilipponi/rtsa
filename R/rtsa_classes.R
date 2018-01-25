@@ -1,6 +1,6 @@
 # title         : Classes for the 'rtsa' package
-# Date          : Sep 2017
-# Version       : 0.1
+# Date          : Jan 2018
+# Version       : 0.2
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 
@@ -21,11 +21,54 @@
 #' @exportClass EOFstack
 
 setClass("EOFstack",
-         representation(eof="RasterBrick",
+         representation(eof.modes="RasterBrick",
                         expansion_coefficients="xts",
                         total_variance="numeric",
                         explained_variance="numeric",
                         center="RasterLayer",
                         scale="RasterLayer"),
-         prototype=prototype(eof=NULL, expansion_coefficients=NULL, total_variance=NULL, explained_variance=NULL, center=NULL, scale=NULL)
+         prototype=prototype(eof.modes=NULL, expansion_coefficients=NULL, total_variance=NULL, explained_variance=NULL, center=NULL, scale=NULL)
          )
+
+setClass("EOTstack",
+         representation(eot="xts",
+                        total_variance="numeric",
+                        explained_variance="numeric",
+                        coords_bp="matrix",
+                        r_predictor="RasterBrick",
+                        rsq_predictor="RasterBrick",
+                        rsq_sums_predictor="RasterBrick",
+                        int_predictor="RasterBrick",
+                        slp_predictor="RasterBrick",
+                        p_predictor="RasterBrick"),
+         prototype=prototype(eot=NULL, total_variance=NULL, explained_variance=NULL, coords_bp=NULL, r_predictor=NULL, rsq_predictor=NULL, rsq_sums_predictor=NULL, int_predictor=NULL, slp_predictor=NULL, p_predictor=NULL)
+)
+
+setClass("STDstack",
+         representation(std="character",
+                        mask="RasterLayer",
+                        seasonal_amplitude="RasterLayer",
+                        seasonal_amplitude_stdev="RasterLayer",
+                        trend_slope="RasterLayer",
+                        remainder_stdev="RasterLayer",
+                        rts="RasterBrickTS",
+                        seasonality="RasterBrickTS",
+                        trend="RasterBrickTS",
+                        seasonaladjtrend="RasterBrickTS",
+                        remainder="RasterBrickTS"),
+         prototype=prototype(std=NULL, rts=NULL, seasonality=NULL, trend=NULL, seasonaladjtrend=NULL, remainder=NULL)
+)
+
+setClass("MKstack",
+         representation(tau="RasterLayer",
+                        pvalue="RasterLayer",
+                        score="RasterLayer",
+                        variance="RasterLayer"),
+         prototype=prototype(tau=NULL, pvalue=NULL, score=NULL, variance=NULL)
+)
+
+setClass("SOMstack",
+         representation(som="RasterBrick",
+                        bmu="xts"),
+         prototype=prototype(som=NULL, bmu=NULL)
+)

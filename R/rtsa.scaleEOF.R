@@ -1,6 +1,6 @@
 # title         : Scale EOF modes
-# Date          : Sep 2017
-# Version       : 0.1
+# Date          : Jan 2018
+# Version       : 0.2
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 #

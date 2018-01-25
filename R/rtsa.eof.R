@@ -1,6 +1,6 @@
 # title         : Empirical Orthogonal Function analysis of raster time series
-# Date          : Sep 2017
-# Version       : 0.1
+# Date          : Jan 2018
+# Version       : 0.2
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 #
@@ -16,11 +16,12 @@
 #' is set raster mask is computed to remove all pixels with incomplete time series
 #' @param nu Numeric. Defines the number of EOFs to return. Defaults to return the full set of EOFs
 #' @param gapfill Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. Accepts argument supported as method in function \code{\link[rtsa]{rtsa.gapfill}}
-#' @param ... Additional arguments to be passed through to function \code{\link{eof}}
+#' @param cores Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for singlecore processing. Applies only to the masking step.
+#' @param ... Additional arguments to be passed through to function \code{\link[sinkr]{eof}}
 #' 
 #' @return Object of class \code{\link{EOFstack}} containing the following components:
 #' \tabular{rll}{
-#' \tab \code{eof} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
+#' \tab \code{eof.modes} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
 #' \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr
 #' \tab \code{total_variance} \tab Numeric. Total variance of input raster time series\cr
 #' \tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOF mode with respect to the total variance of input raster time series\cr
@@ -37,9 +38,9 @@
 #' analyses of climate data", McGill University, CCGCR Report No. 97-1, 
 #' Montreal, Quebec, 52pp.
 #'
-#' Taylor, Marc H., Martin Losch, Manfred Wenzel, Jens Schroeter (2013). 
+#' Marc, T.H., Losch, M., Wenzel, M., Schroeter, J. (2013). 
 #' On the Sensitivity of Field Reconstruction and Prediction Using 
-#' Empirical Orthogonal Functions Derived from Gappy Data. J. Climate, 
+#' Empirical Orthogonal Functions Derived from Gappy Data. Journal of Climate, 
 #' 26, 9194-9205. \href{http://dx.doi.org/10.6084/m9.figshare.732650}{pdf}
 #' 
 #' @keywords EOF PCA SVD time series analysis
@@ -58,6 +59,7 @@
 #' 
 #' ## generate raster mask
 #' raster_mask <- pacificSST[[1]] # create raster mask
+#' names(raster_mask) <- "mask"
 #' values(raster_mask) <- 1 # set raster mask values
 #' raster_mask[which(is.na(getValues(pacificSST[[1]])))] <- 0 # set raster mask values
 #'
@@ -80,7 +82,7 @@
 #' @export
 
 # define rsta.eof function
-rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centered=TRUE, scaled=FALSE, method="svds", recursive=FALSE, verbose=FALSE){
+rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centered=TRUE, scaled=FALSE, method="svds", recursive=FALSE, cores=1L, verbose=FALSE){
   
   # require the 'sinkr' package
   if(!requireNamespace("sinkr", quietly = TRUE))
@@ -92,14 +94,12 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   
   # set number of EOFs to return
   if(is.null(nu)){
-    #nu <- as.integer(rasterts@raster@data@nlayers) ### not working if data are not imported inMemory from raster
     nu <- as.integer(nlayers(rasterts))
     warning(paste("Number of EOFs to return not set using the 'nu' argument.\nIt is set by default to number of input layers: ", as.integer(rasterts@raster@data@nlayers), sep=""))
   } else {
     if(!(class(nu) %in% c("integer", "numeric"))){
       stop("'nu' argument must be numeric")
     } else {
-      #if(nu>as.integer(rasterts@raster@data@nlayers)){ ### not working if data are not imported inMemory from raster
       if(nu > as.integer(nlayers(rasterts)) | nu < 2){
         nu <- as.integer(nlayers(rasterts))
         warning(paste("Number of EOFs to return is higher than the number of input layers.\nIt is set by default to number of input layers: ", as.integer(rasterts@raster@data@nlayers), sep=""))
@@ -112,7 +112,7 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   
   # set raster mask
   # check if 'rastermask' argument is present
-  if(!(is.null(rastermask))){ ### capire come mettere il compute mask: (is.null(mask) & compute.mask)
+  if(!(is.null(rastermask))){
     if(class(rastermask) %in% c("character")){
       if(rastermask %in% c("compute")){
         # computer raster mask from raster time series (pixels)
@@ -120,36 +120,53 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
           message("Mask raster will be computed from input raster time series\nPixel temporal profiles with missing data will be masked")
         }
         # create matrix with raster time series values
-        #rasterts_index <- as.vector(1:as.integer(rasterts@raster@nrows*rasterts@raster@ncols))
-        #matrice_full <- t(as.matrix(rasterts[rasterts_index]))
         matrice_full <- as.matrix(getValues(rasterts))
         
         # define function to mask incomplete pixel temporal profiles
         generateMask <- function(x){
-          m <- as.integer(length(which(is.na(x)))==0)
+          m <- as.integer(!anyNA(x))
           return(m)
         }
+        
         # generate raster mask
-        generated_mask <- as.vector(apply(X=matrice_full, FUN=generateMask, MARGIN=1))
-        ### this may be parallelized after setting a cluster using: parApply(cl=NULL, X=matrice_full, FUN=generateMask, MARGIN=1)
+        if(cores>1){
+          if(!requireNamespace("parallel", quietly = TRUE)){
+            warning("Package 'parallel' is required to run this function.\nGoing on using one core")
+            generated_mask <- as.vector(apply(X=matrice_full, FUN=generateMask, MARGIN=1))
+          } else {
+            # check that machine has available cores
+            if(cores > as.integer(parallel::detectCores())){
+              cores <- as.integer(parallel::detectCores())
+            }
+            cl <- parallel::makePSOCKcluster(cores)
+            parallel::clusterExport(cl, varlist=c("generateMask"), envir=environment())
+            generated_mask <- parallel::parApply(cl=cl, X=matrice_full, FUN=generateMask, MARGIN=1)
+            parallel::stopCluster(cl)
+          }
+        } else {
+          generated_mask <- as.vector(apply(X=matrice_full, FUN=generateMask, MARGIN=1))
+        }
+        # set not NaN pixel list
         na_index_mask <- as.vector(which(generated_mask==1))
+        # remove imported matrix and clean workspace
+        rm(matrice_full)
+        gc(verbose=FALSE)
       }
     } else {
       if(!(class(rastermask) %in% c("RasterLayer"))){
         warning("'rastermask' argument is not an object of class 'raster'.\nNo raster mask will be used to clip the input raster time series")
-        na_index_mask <- as.vector(1:as.integer(rasterts@raster@nrows*rasterts@raster@ncols))
+        na_index_mask <- as.vector(1:ncell(rasterts))
       } else {
         # compare mask raster extent with the input raster time series
         mask_correspondence <- as.logical(compareRaster(rasterts@raster, rastermask, extent=TRUE, rowcol=TRUE, crs=TRUE, res=TRUE, rotation=TRUE, values=FALSE, stopiffalse=FALSE))
-        #mask_correspondence <- TRUE ### for debug
         if(!(mask_correspondence)){
           warning("'rastermask' extent does not correspond to 'rasterts'.\nNo mask will be used to clip the input raster time series")
-          na_index_mask <- as.vector(1:as.integer(rasterts@raster@nrows*rasterts@raster@ncols))
+          na_index_mask <- as.vector(1:ncell(rasterts))
         } else {
           # check mask raster values
           if(length(which(getValues(rastermask)==1))<1){
             warning("'rastermask' does not contain valid pixels for masking purpose (mask pixel values equal to 1).\nNo mask will be used to clip the input raster time series")
-            na_index_mask <- as.vector(1:as.integer(rasterts@raster@nrows*rasterts@raster@ncols))
+            na_index_mask <- as.vector(1:ncell(rasterts))
           } else {
             
             # import raster time series applying raster mask
@@ -162,7 +179,7 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
       }
     }
   } else {
-    na_index_mask <- as.vector(1:as.integer(rasterts@raster@nrows*rasterts@raster@ncols))
+    na_index_mask <- as.vector(1:ncell(rasterts))
     if(verbose){
       message("Mask raster not supplied. Using the full raster time series")
       }
@@ -174,19 +191,19 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   }
   matrice <- as.matrix(rasterts[na_index_mask])
   if(verbose){
-    message("Masked raster time series has ", length(matrice[1,]), " pixels and ", length(matrice[,1]), " temporal observations")
+    message("Masked raster time series has ", ncol(matrice), " pixels and ", nrow(matrice), " temporal observations")
   }
   ### matrice object should have time over rows and pixels over columns (contrary of the function help)
   
   # check if there are NAs in the masked dataset
-  na_check <- length(which(is.na(matrice)))>0
+  na_check <- anyNA(matrice)
   if(na_check){
     if(gapfill == "none"){
       warning("Raster time series still contain NA values after masking.\nChange input raster mask or consider the use of the available options\nfor 'gapfill' argument to select a gap-filling method before the EOF computation.\nGoing on however using gappy input raster time series for the EOF computation")
     }
   } else {
     if(verbose){
-      message("Raster time series does not contain NA values after masking")
+      message("Raster time series does not contain NA values after masking: OK")
     }
   }
 
@@ -194,8 +211,8 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   if(na_check){
     if(gapfill != "none"){
       # check if gapfill argument is set
-      if(!(gapfill %in% c("none", "dineof", "gapfill", "linear", "spline", "stine")))
-        stop("'gapfill' argument must be one of the following options: 'none', 'dineof', 'gapfill', 'linear', 'spline', 'stine'")
+      if(!(gapfill %in% c("none", "dineof", "linear", "spline", "stine")))
+        stop("'gapfill' argument must be one of the following options: 'none', 'dineof', 'linear', 'spline', 'stine'")
       # generate rastermask layer for gap-filling procedure
       rastermask_gapfill <- raster(rasterts@raster[[1]])
       values(rastermask_gapfill) <- 0
@@ -209,7 +226,7 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
     }
   } else {
     if(verbose){
-      warning("Raster time series does not contain NA values after masking.\nGap-filling will be not performed before the EOF computation") 
+      warning("Raster time series does not contain NA values after masking: OK.\nGap-filling will be not performed before the EOF computation") 
     }
   }
   
@@ -230,12 +247,7 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   }
   
   # create output object
-  
-  # explained variance
-  #explained_variance <- data.frame(Explained_variance=eofresult$Lambda[1:nu]/eofresult$tot.var*100, Lambda=eofresult$Lambda[1:nu], Total_variance=rep(eofresult$tot.var, nu))
-  # set column names
-  #names(explained_variance) <- c("Explained_variance", "Lambda", "Total_variance")
-  
+
   explained_variance <- as.vector(eofresult$Lambda[1:nu]/eofresult$tot.var*100)
   #lambda <- as.vector(eofresult$Lambda[1:nu])
   total_variance <- as.numeric(eofresult$tot.var)
@@ -261,9 +273,16 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   # set band names
   names(eof_dataset) <- validNames(eof_names)
   
+  # set final mask
+  void_raster <- raster(rasterts@raster[[1]])
+  names(void_raster) <- validNames("mask")
+  values(void_raster) <- 0
+  void_raster[na_index_mask] <- 1
+  
   # assemble results in a object of class 'EOFstack'
   eofreturn <- new("EOFstack")
-  eofreturn@eof <- eof_dataset
+  eofreturn@mask <- void_raster
+  eofreturn@eof.modes <- eof_dataset
   eofreturn@expansion_coefficients <- eof.ec
   eofreturn@total_variance <- total_variance
   eofreturn@explained_variance <- explained_variance
@@ -284,4 +303,7 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   
   # return function result
   return(eofreturn)
+  
+  # stop cluster
+  on.exit(stopCluster(cl))
 }

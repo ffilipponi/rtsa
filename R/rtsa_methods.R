@@ -1,22 +1,35 @@
 # title         : Methods for the 'rtsa' package
-# Date          : Sep 2017
-# Version       : 0.1
+# Date          : Jan 2018
+# Version       : 0.2
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 
 #######################################################################
 
+#' @importFrom methods .hasSlot
 #' @exportMethod nlayers ncol nrow ncell setValues getValues
 
-# create function to read number of layers from RasterBrickTS object
 setMethod('nlayers', signature(x='RasterBrickTS'),
           function(x){
-            return(x@raster@data@nlayers)
+            return(length(x@time))
   }
+)
+
+setMethod('nlayers', signature(x='RasterStackTS'),
+          function(x){
+            return(length(x@time))
+          }
 )
 
 # create function to read number of columns from RasterBrickTS object
 setMethod('ncol', signature(x='RasterBrickTS'),
+          function(x){
+            return(x@raster@ncols)
+          }
+)
+
+# create function to read number of columns from RasterBrickTS object
+setMethod('ncol', signature(x='RasterStackTS'),
           function(x){
             return(x@raster@ncols)
           }
@@ -29,10 +42,24 @@ setMethod('nrow', signature(x='RasterBrickTS'),
           }
 )
 
+# create function to read number of columns from RasterBrickTS object
+setMethod('nrow', signature(x='RasterStackTS'),
+          function(x){
+            return(x@raster@ncols)
+          }
+)
+
 # create function to read number of cells from RasterBrickTS object
 setMethod('ncell', signature(x='RasterBrickTS'),
           function(x){
-            return(as.integer(as.integer(x@raster@ncols) * as.integer(x@raster@nrows)))
+            return(ncol(x) * nrow(x))
+          }
+)
+
+# create function to read number of cells from RasterStackTS object
+setMethod('ncell', signature(x='RasterStackTS'),
+          function(x){
+            return(ncol(x) * nrow(x))
           }
 )
 
@@ -51,26 +78,20 @@ setMethod('setValues', signature(x='RasterBrickTS'),
 # create function to get cell values to RasterBrickTS object
 setMethod('getValues', signature(x='RasterBrickTS'),
           function(x){
-            return(x@raster@data@values)
+            if(.hasSlot(x@raster, 'data')){
+              return(x@raster@data@values)
+            } else {
+              stop("Input argument does not contain a 'data' slot.\nUse 'inMemory' raster object as input for the 'rts' function")
+            }
             }
 )
 
-# # alternative method for ncell function
-# # create function to read number of cells from RasterBrickTS object
-# setMethod('ncell', signature(x='RasterBrickTS'),
-#           function(x){
-#             return(nrow(x) * ncol(x))
-#           }
-# )
-
-### note
-
-#nlayers()
-#if raster is inMemory the number of layer can be retrieved using the method above
-#if raster is not in memory number of layer can be retrieved using:
-#length(rasterts@raster@layers)
-# as an alternative the number of layers can be derived from the length of dates in the rts object
-#length(rasterts@time[,1])
-
-#ncell()
-#by default rts package return value '1' when using ncell()
+setMethod('getValues', signature(x='RasterStackTS'),
+          function(x){
+            if(.hasSlot(x@raster, 'data')){
+              return(x@raster@data@values)
+            } else {
+              stop("Input argument does not contain a 'data' slot.\nUse 'inMemory' raster object as input for the 'rts' function")
+            }
+          }
+)

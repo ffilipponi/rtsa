@@ -1,6 +1,6 @@
 # title         : Gap-filling raster time series
-# Date          : Sep 2017
-# Version       : 0.1
+# Date          : Jan 2018
+# Version       : 0.2
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 #
@@ -20,7 +20,6 @@
 #' \tab \code{"spline"} \tab for spline interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stats]{splinefun}}\cr
 #' \tab \code{"stine"} \tab for stine interpolation in \code{\link[imputeTS]{na.interpolation}} using \code{\link[stinepack]{stinterp}}\cr
 #' \tab \code{"dineof"} \tab for dineof interpolation using \code{\link[sinkr]{dineof}}\cr
-#' \tab \code{"gapfill"} \tab for gapfill interpolation using \code{\link[gapfill]{gapfill}}
 #' }
 #' @param cores Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for 
 #' singlecore processing.
@@ -36,7 +35,7 @@
 #' 
 #' @keywords time series analysis gap-filling
 #' 
-#' @seealso \code{\link[imputeTS]{na.interpolation}} \code{\link[sinkr]{dineof}}, \code{\link[gapfill]{gapfill}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
+#' @seealso \code{\link[imputeTS]{na.interpolation}} \code{\link[sinkr]{dineof}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
 #' 
 #' @examples
 #' \dontrun{
@@ -75,12 +74,9 @@
 #' 
 #' # using dineof interpolation and raster mask
 #' rasterts_dineof <- rtsa.gapfill(rasterts_gappy, rastermask=raster_mask, method="dineof")
-#' 
-#' # using gapfill interpolation and raster mask
-#' rasterts_gapfill <- rtsa.gapfill(rasterts_gappy, rastermask=raster_mask, method="gapfill")
 #' }
 #' 
-#' @import raster rts sinkr gapfill imputeTS
+#' @import raster rts sinkr imputeTS
 #' @importFrom zoo as.yearmon index
 #' @importFrom xts periodicity
 #' @importFrom sp coordinates
@@ -94,8 +90,8 @@ rtsa.gapfill <- function(x, rastermask=NULL, method, cores=1L, verbose=FALSE){
   if(!(class(x) %in% c("RasterStackTS", "RasterBrickTS")))
     stop("'x' argument must be an object of class 'RasterStackTS', 'RasterBrickTS'")
   
-  if(!(method %in% c("dineof", "gapfill", "linear", "spline", "stine")))
-    stop("'method' argument must be one of the following options: 'dineof', 'gapfill', 'linear', 'spline', 'stine'")
+  if(!(method %in% c("dineof", "linear", "spline", "stine")))
+    stop("'method' argument must be one of the following options: 'dineof', 'linear', 'spline', 'stine'")
   
   #################
   # Process raster mask
@@ -106,7 +102,6 @@ rtsa.gapfill <- function(x, rastermask=NULL, method, cores=1L, verbose=FALSE){
     } else {
       # compare mask raster extent with the input raster time series
       mask_correspondence <- as.logical(compareRaster(x@raster, rastermask, extent=TRUE, rowcol=TRUE, crs=TRUE, res=TRUE, rotation=TRUE, values=FALSE, stopiffalse=FALSE))
-      #mask_correspondence <- TRUE ### for debug
       if(!(mask_correspondence)){
         warning("'rastermask' extent does not correspond to 'x'.\nNo mask will be used to clip the input raster time series")
         na_index_mask <- as.vector(1:as.integer(ncell(x)))
@@ -127,19 +122,35 @@ rtsa.gapfill <- function(x, rastermask=NULL, method, cores=1L, verbose=FALSE){
     }
   } else {
     if(verbose){
-      message("Mask raster not supplied. Masking pixel with less than two temporal observation")
+      message("Mask raster not supplied. Masking pixel with less than two temporal observation") ### probabilmente questo check va effettuato anche se la maschera viene fornita ma non maschera tutti i pixel con profili nulli
     }
-    #na_index_mask <- as.vector(1:as.integer(ncell(x)))
-    
+
     # compute mask using pixel that have less than two values in temporal profiles
     # define function to mask incomplete pixel profiles
     generateMask <- function(x){
       m <- as.integer(length(which(is.na(x)))<=(length(x)-2))
       return(m)
     }
+    
     # generate raster mask
-    generated_mask <- as.vector(apply(X=as.matrix(getValues(x)), FUN=generateMask, MARGIN=1))
-    ### this may be parallelized after setting a cluster using: parApply(cl=NULL, X=as.matrix(getValues(x)), FUN=generateMask, MARGIN=1)
+    if(cores>1){
+      if(!requireNamespace("parallel", quietly = TRUE)){
+        warning("Package 'parallel' is required to run this function.\nGoing on using one core")
+        generated_mask <- as.vector(apply(X=as.matrix(getValues(x)), FUN=generateMask, MARGIN=1))
+      } else {
+        # check that machine has available cores
+        if(cores > as.integer(parallel::detectCores())){
+          cores <- as.integer(parallel::detectCores())
+        }
+        cl <- parallel::makePSOCKcluster(cores)
+        parallel::clusterExport(cl, varlist=c("generateMask"), envir=environment())
+        generated_mask <- parallel::parApply(cl=cl, as.matrix(getValues(x)), FUN=generateMask, MARGIN=1)
+        parallel::stopCluster(cl)
+      }
+    } else {
+      generated_mask <- as.vector(apply(X=as.matrix(getValues(x)), FUN=generateMask, MARGIN=1))
+    }
+    # set not NaN pixel list
     na_index_mask <- as.vector(which(generated_mask==1))
   }
   
@@ -162,148 +173,10 @@ rtsa.gapfill <- function(x, rastermask=NULL, method, cores=1L, verbose=FALSE){
   }
   
   #################
-  # Perform gap-filling using 'gapfill' method from package 'gapfill'
-  if(method == "gapfill"){
-    if(!requireNamespace("gapfill", quietly = T))
-      stop("Package 'gapfill' is required to run this function.\nYou can install using the command:\ninstall.packages('gapfill', dependencies=TRUE)")
-    
-    ### add control requireing at least 4 images
-    
-    # extract year
-    xts_year <- format(as.yearmon(index(x@time)), "%Y")
-    # year range
-    year_range <- as.integer((max(as.numeric(xts_year)) - min(as.numeric(xts_year)))+1)
-    
-    # continue only if number of observation years is greater than 1
-    if(year_range <= 1){
-      stop("Number of observation years should be greater than one.\nSelected another gapfilling method")
-    } else {
-      # year unique values
-      year_unique <- unique(min(as.numeric(xts_year)):max(as.numeric(xts_year)))
-      # extract doy
-      xts_doy <- as.integer(format(as.POSIXct(index(x@time), origin="1970-01-01", tz="GMT"), "%j"))
-      # extract doy range
-      doy_range <- as.integer((max(as.numeric(xts_doy)) - min(as.numeric(xts_doy)))+1)
-      # doy unique values
-      doy_unique <- unique(min(as.numeric(xts_doy)):max(as.numeric(xts_doy)))
-      
-      # extract periodicity ### use periodicity to create
-      # create data.frame for scale conversion
-      #time_scale_conv <- data.frame(periodicity=c("yearly", "quarter", "monthly", "weeks", "days"), seq=c("years", "quarter", "months", "weeks", "days"))
-      
-      # extract time periodicity of raster time series
-      time_periodicity <- periodicity(x@time)
-      #time_scale <- time_periodicity$scale
-      
-      # create regularly spaced sequence of dates
-      obs_time <- seq(time_periodicity$start, time_periodicity$end, by=time_periodicity$label)
-      # clean 29 Feb if periodicity is different from days
-      if(time_periodicity$label != "day"){
-        obs_time_clean <- obs_time[format(obs_time, "%m %d") !=  "02 29"]
-      }
-      # extract doy range
-      doy_range <- as.integer(as.integer(range(format(obs_time, "%j"))[2]) - as.integer(range(format(obs_time, "%j"))[1])+1)
-      # clean 
-      
-      doy_unique <- sort(unique(as.integer(format(obs_time, "%j"))))
-      # year range
-      # year_range <- as.integer(as.integer(range(format(obs_time, "%Y"))[2]) - as.integer(range(format(obs_time, "%Y"))[1])+1)
-      
-      # create empty array to store raster time series
-      arr <- array(dim=c(nrow(x), ncol(x), doy_range, year_range))
-      # set array dimansion names
-      dimnames(arr)[[1]] <- as.vector(sort(unique(coordinates(raster(x[[1]]))[,2])))
-      dimnames(arr)[[2]] <- as.vector(sort(unique(coordinates(raster(x[[1]]))[,1])))
-      #dimnames(arr)[[3]] <- as.vector(doy_unique) ### gives error
-      dimnames(arr)[[4]] <- year_unique
-      
-      # fill in array with raster time series values
-      for(y in min(as.numeric(xts_year)):max(as.numeric(xts_year))){
-        for(d in min(as.numeric(xts_doy)):max(as.numeric(xts_doy))){
-          layer_id <- as.integer(which(xts_year == y & xts_doy == d)[1])
-          arr_y <- which(year_unique == y)
-          arr_d <- which(doy_unique == d)
-          if(!is.na(as.integer(which(xts_year == y & xts_doy == d)[1]))){
-            arr[,,arr_d,arr_y] <- as.matrix(x@raster[[layer_id]])
-          } else {
-            arr[,,arr_d,arr_y] <- NaN
-          }
-        }
-      }
-      
-      # get mask values
-      na_index_matrix <- as.matrix(rastermask)
-      # create arry for masking
-      mask_array <- array(dim=c(x@raster@nrows, x@raster@ncols, doy_range, year_range))
-      # set array dimansion names
-      dimnames(mask_array)[[1]] <- as.vector(sort(unique(coordinates(raster(x[[1]]))[,2])))
-      dimnames(mask_array)[[2]] <- as.vector(sort(unique(coordinates(raster(x[[1]]))[,1])))
-      dimnames(mask_array)[[3]] <- as.vector(doy_unique)
-      dimnames(mask_array)[[4]] <- year_unique
-      # set values for the array
-      for(y in min(as.numeric(xts_year)):max(as.numeric(xts_year))){
-        for(d in min(as.numeric(xts_doy)):max(as.numeric(xts_doy))){
-          #layer_id <- as.integer(which(xts_year == y & xts_doy == d)[1])
-          arr_y <- which(year_unique == y)
-          arr_d <- which(doy_unique == d)
-          if(!is.na(as.integer(which(xts_year == y & xts_doy == d)[1]))){
-            mask_array[,,arr_d,arr_y] <- as.logical(na_index_matrix)
-          } else {
-            mask_array[,,arr_d,arr_y] <- matrix(data=as.logical(0), nrow=x@raster@nrows, ncol=x@raster@ncols)
-          }
-        }
-      }
-      
-      # Perform gap-filling
-      if(verbose){
-        message("Perform gap-filling. It may take a long time")
-      }
-      if(cores>1){
-        if(!requireNamespace(doParallel, quietly = TRUE)){
-          warning("Package 'doParallel' is required to run this function.\nYou can install using the command:\ninstall.packages('doParallel', dependencies=TRUE)\nGoing on using one core")
-          arr_gapfilled <- gapfill::Gapfill(data=arr, subset=mask_array, dopar=FALSE)
-        } else {
-          # check that machine has available cores
-          if(cores > as.integer(parallel::detectCores())){
-            cores <- as.integer(parallel::detectCores())
-          }
-          cl <- makePSOCKcluster(cores)
-          doParallel::registerDoParallel(cl)
-          #cl <- parallel::makePSOCKcluster(cores)
-          arr_gapfilled <- gapfill::Gapfill(data=arr, subset=mask_array, dopar=TRUE)
-          stopCluster(cl)
-        }
-      } else {
-        arr_gapfilled <- gapfill::Gapfill(data=arr, subset=mask_array, dopar=FALSE)
-      }
-      
-      # assemble results back to raster
-      for(y in min(as.numeric(xts_year)):max(as.numeric(xts_year))){
-        for(d in min(as.numeric(xts_doy)):max(as.numeric(xts_doy))){
-          layer_id <- as.integer(which(xts_year == y & xts_doy == d)[1])
-          arr_y <- which(year_unique == y)
-          arr_d <- which(doy_unique == d)
-          if(!is.na(as.integer(which(xts_year == y & xts_doy == d)[1]))){
-            x@raster[[layer_id]] <- t(as.matrix(arr_gapfilled$fill[,,arr_d,arr_y]))
-          } else {
-            #
-          }
-        }
-      }
-    }
-  }
-  
-  #################
   # Perform gap-filling using 'na.interpolation' method from package 'imputeTS'
   if(method %in% c("linear", "spline", "stine")){
     if(!requireNamespace("imputeTS", quietly = TRUE))
       stop("Package 'imputeTS' is required to run this function.\nYou can install using the command:\ninstall.packages('imputeTS', dependencies=TRUE)")
-    
-    
-    # # perform gap-filling directly on raster object
-    # for(p in na_index_mask){
-    #   x@raster[p] <- imputeTS::na.interpolation(x=as.vector(x@raster[p]), option=method)
-    # }
     
     # convert input raster to matrix
     rast_matrix <- as.matrix(x@raster[na_index_mask])
@@ -341,7 +214,7 @@ rtsa.gapfill <- function(x, rastermask=NULL, method, cores=1L, verbose=FALSE){
       message("Perform gap-filling")
     }
     if(cores>1){
-      if(!requireNamespace(parallel, quietly = TRUE)){
+      if(!requireNamespace("parallel", quietly = TRUE)){
         warning("Package 'parallel' is required to run this function.\nGoing on using one core")
         matrix_gapfilled <- apply(X=rast_matrix, MARGIN=1, FUN=na.interpolation.par)
       } else {
@@ -371,4 +244,7 @@ rtsa.gapfill <- function(x, rastermask=NULL, method, cores=1L, verbose=FALSE){
   
   # return result
   return(x)
+  
+  # stop cluster
+  on.exit(stopCluster(cl))
 }
