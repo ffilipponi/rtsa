@@ -24,12 +24,12 @@ singlecore processing.}
 
 \item{only.statistics}{Logical. If TRUE returns only the statistics from seasonal, trend and remainder components.}
 
-\item{keep.original}{Logical. If TRUE returns the original raster time series values in the 'rts' slot of \code{\linkS4class{STDstack}} object.}
+\item{keep.original}{Logical. If TRUE returns the original raster time series values in the 'rts' slot of \code{\link{STDstack-class}} object.}
 
 \item{...}{Additional arguments to be passed through to function \code{\link[seasonal]{seas}}.}
 }
 \value{
-Object of class \code{\link{STDstack}} containing the following components:
+Object of class \code{\link{STDstack-class}} containing the following components:
 \tabular{rll}{
 \tab \code{std} \tab Seasonal Trend Decomposition method used\cr
 \tab \code{mask} \tab Final raster mask of computed pixels as \code{\linkS4class{RasterLayer}} object\cr

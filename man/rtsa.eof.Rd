@@ -9,21 +9,25 @@ rtsa.eof(rasterts, rastermask = NULL, nu = NULL, gapfill = "none",
   cores = 1L, verbose = FALSE)
 }
 \arguments{
-\item{rasterts}{Input raster time series as \code{\linkS4class{RasterStackTS}} or \code{\linkS4class{RasterBrickTS}} object}
+\item{rasterts}{Input raster time series as \code{\linkS4class{RasterStackTS}} or \code{\linkS4class{RasterBrickTS}} object.}
 
 \item{rastermask}{Either a \code{\linkS4class{RasterLayer}} or "compute". Raster layer to use as a mask. When "compute" 
-is set raster mask is computed to remove all pixels with incomplete time series}
+is set raster mask is computed to remove all pixels with incomplete time series.}
 
-\item{nu}{Numeric. Defines the number of EOFs to return. Defaults to return the full set of EOFs}
+\item{nu}{Numeric. Defines the number of EOFs to return. Defaults to return the full set of EOFs.}
 
-\item{gapfill}{Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. Accepts argument supported as method in function \code{\link[rtsa]{rtsa.gapfill}}}
+\item{gapfill}{Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. Accepts argument supported as method in function \code{\link[rtsa]{rtsa.gapfill}}.}
+
+\item{centered}{Logical. If TRUE center the input data before EOF computation. Argument is passed through to function \code{\link[sinkr]{eof}}.}
+
+\item{scaled}{Logical. If TRUE scale the input data before EOF computation. Argument is passed through to function \code{\link[sinkr]{eof}}.}
 
 \item{cores}{Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for singlecore processing. Applies only to the masking step.}
 
-\item{...}{Additional arguments to be passed through to function \code{\link[sinkr]{eof}}}
+\item{...}{Additional arguments to be passed through to function \code{\link[sinkr]{eof}}.}
 }
 \value{
-Object of class \code{\link{EOFstack}} containing the following components:
+Object of class \code{\linkS4class{EOFstack}} containing the following components:
 \tabular{rll}{
 \tab \code{eof.modes} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
 \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr

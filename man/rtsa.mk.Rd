@@ -22,7 +22,7 @@ singlecore processing.}
 \item{...}{Additional arguments to be passed through to function \code{\link[Kendall]{MannKendall}}.}
 }
 \value{
-Object of class \code{\link{MKstack}} containing the following components:
+Object of class \code{\link{MKstack-class}} containing the following components:
 \tabular{rll}{
 \tab \code{tau} \tab Kendall tau statistic\cr
 \tab \code{pvalue} \tab Kendall two-sided p-value\cr

@@ -7,14 +7,14 @@
 rtsa.scaleEOF(x, cut = 1, method = "percentile")
 }
 \arguments{
-\item{x}{Input \code{\linkS4class{EOFStack}} object generated using \code{\link[rtsa]{rtsa.eof}}}
+\item{x}{Input \code{\link{EOFstack-class}} object generated using \code{\link[rtsa]{rtsa.eof}}}
 
 \item{cut}{Numeric. Defines the percentile to be used to scale each EOFs. Default is set to 1 (1st and 99th percentiles)}
 
 \item{method}{Character. Method used to scale EOF modes. Only default \code{"percentile"} is supported}
 }
 \value{
-Updates the 'eof' slot in the object of class \code{\linkS4class{EOFstack}} containing the following components:
+Updates the 'eof' slot in the object of class \code{\link{EOFstack-class}} containing the following components:
 \tabular{lll}{
 \tab \code{eof} \tab Scaled EOF modes as \code{\linkS4class{RasterBrick}} object\cr
 \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr
