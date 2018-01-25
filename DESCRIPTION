@@ -1,6 +1,6 @@
 Package: rtsa
-Version: 0.1
-Date: 2017-09-01
+Version: 0.2
+Date: 2018-01-25
 Title: Raster Time Series Analysis
 Authors@R: c(person("Federico", "Filipponi", role = c("aut", "cre"),
                      email = "federico.filipponi@gmail.com"))
@@ -15,11 +15,11 @@ Imports:
     doParallel,
     sinkr,
     remote,
-    gapfill,
-    kohonen,
     imputeTS,
-    bfast,
     stlplus,
+    Kendall,
+    seasonal,
+    x13binary,
     methods,
     sp,
     xts,
