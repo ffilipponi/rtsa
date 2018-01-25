@@ -79,7 +79,7 @@ rasterts_dineof <- rtsa.gapfill(rasterts_gappy, rastermask=raster_mask, method="
 
 }
 \seealso{
-\code{\link[imputeTS]{na.interpolation}} \code{\link[sinkr]{dineof}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
+\code{\link[imputeTS]{na.interpolation}}, \code{\link[sinkr]{dineof}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
 }
 \author{
 Federico Filipponi
