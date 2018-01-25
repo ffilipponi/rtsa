@@ -15,7 +15,6 @@ Since some techniques for spatio-temporal analysis can not deal with missing val
 ### Supported gap-filling methods:
 
 * DINEOF
-* gapfill
 * linear interpolation
 * spline interpolation
 * stine interpolation
@@ -23,13 +22,9 @@ Since some techniques for spatio-temporal analysis can not deal with missing val
 ### Currently, the following analytical methods are supported:
 
 * Empirical Orthogonal Function
-
-### The following analytical methods will be supported soon:
-
 * Empirical Orthogonal Teleconnections
 * Self Organizing Maps
 * Seasonal Trend Decomposition using Loess
-* Breaks For Additive Season and Trend, 
 * X-11
 * X-13-ARIMA seasonal adjustment
 
