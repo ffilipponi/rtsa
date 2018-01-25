@@ -1,7 +1,14 @@
 --- to do
 
-
 --- current version
+--25-January-2018, version 0.2
+Added function 'rtsa.eot' to compute Empirical Orthogonal Teleconnections
+Added function 'rtsa.stl' to compute Seasonal Trend Decomposition using Loess
+Added function 'rtsa.seas' to compute X-11 and X-13-ARIMA seasonal adjustment
+Added function 'rtsa.mk' to compute Mann-Kendall trend test
+
 --- 04-September-2017, version 0.1
 Releasing the firts version of the package on GitHub
+Added functions 'rtsa.eof' and 'rtsa.scaleEOF' to compute Empirical Orthogonal Functions
+Added function 'rtsa.gapfill' to perform gapfilling of missing data
 Starting this log
