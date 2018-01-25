@@ -35,7 +35,7 @@
 #' 
 #' @keywords time series analysis gap-filling
 #' 
-#' @seealso \code{\link[imputeTS]{na.interpolation}} \code{\link[sinkr]{dineof}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
+#' @seealso \code{\link[imputeTS]{na.interpolation}}, \code{\link[sinkr]{dineof}}, \code{\link[stats]{approxfun}}, \code{\link[stats]{splinefun}}, \code{\link[stinepack]{stinterp}}
 #' 
 #' @examples
 #' \dontrun{

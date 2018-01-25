@@ -43,11 +43,12 @@
 #' 
 #' van den Dool H.M., Saha S., Johansson A. (2000). Empirical Orthogonal Teleconnections. 
 #' Journal of Climate, Volume 13, Issue 8, pp. 1421-1435. 
-#' \href{http://journals.ametsoc.org/doi/pdf/10.1175/1520-0442%282000%29013%3C1421%3AEOT%3E2.0.CO%3B2}{pdf}
+#' \url{http://journals.ametsoc.org/doi/abs/10.1175/1520-0442%282000%29013%3C1421%3AEOT%3E2.0.CO%3B2
+#' }
 #' 
 #' @keywords EOT time series analysis
 #' 
-#' @seealso \code{\link[remote]{eot}}, \code{\link[rtsa]{rtsa.eof}}, \code{\link[rtsa]{rtsa.gapfill}}
+#' @seealso \code{\link[remote]{eot}}, \code{\link[rtsa]{rtsa.eof}}, \code{\link[rtsa]{rtsa.gapfill}}, \code{\linkS4class{EOTstack}}
 #' 
 #' @examples
 #' \dontrun{

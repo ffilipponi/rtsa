@@ -7,7 +7,7 @@
 #######################################################################
 
 #' @importFrom methods .hasSlot
-#' @exportMethod nlayers ncol nrow ncell setValues getValues
+#' #@exportMethod nlayers ncol nrow ncell setValues getValues
 
 setMethod('nlayers', signature(x='RasterBrickTS'),
           function(x){

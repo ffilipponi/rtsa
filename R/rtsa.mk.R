@@ -20,14 +20,12 @@
 #' singlecore processing.
 #' @param ... Additional arguments to be passed through to function \code{\link[Kendall]{MannKendall}}.
 #' 
-#' @return Object of class \code{\link{STDstack}} containing the following components:
+#' @return Object of class \code{\link{MKstack}} containing the following components:
 #' \tabular{rll}{
-#' \tab \code{std} \tab Seasonal Trend Decomposition method used\cr
-#' \tab \code{rts} \tab Input raster time series as \code{\linkS4class{RasterBrickTS}} object (only returned if \code{keep.original = TRUE})\cr
-#' \tab \code{seasonality} \tab Seasonal component as \code{\linkS4class{RasterBrickTS}} object\cr
-#' \tab \code{trend} \tab Trend component as \code{\linkS4class{RasterBrickTS}} object\cr
-#' \tab \code{seasonaladjtrend} \tab Seasonal adjusted trend component as \code{\linkS4class{RasterBrickTS}} object\cr
-#' \tab \code{remainder} \tab Remainder component as \code{\linkS4class{RasterBrickTS}} object\cr
+#' \tab \code{tau} \tab Kendall tau statistic\cr
+#' \tab \code{pvalue} \tab Kendall two-sided p-value\cr
+#' \tab \code{score} \tab Kendall Score\cr
+#' \tab \code{variance} \tab Variance of Kendall Score\cr
 #' }
 #' 
 #' @details 

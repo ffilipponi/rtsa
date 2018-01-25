@@ -11,15 +11,17 @@
 #' @description This function conducts an Empirical Orthogonal Function analysis (EOF) via a covariance matrix 
 #' (cov4gappy function) using "sinkr" package especially designed to handle gappy raster time series
 #' 
-#' @param rasterts Input raster time series as \code{\linkS4class{RasterStackTS}} or \code{\linkS4class{RasterBrickTS}} object
+#' @param rasterts Input raster time series as \code{\linkS4class{RasterStackTS}} or \code{\linkS4class{RasterBrickTS}} object.
 #' @param rastermask Either a \code{\linkS4class{RasterLayer}} or "compute". Raster layer to use as a mask. When "compute" 
-#' is set raster mask is computed to remove all pixels with incomplete time series
-#' @param nu Numeric. Defines the number of EOFs to return. Defaults to return the full set of EOFs
-#' @param gapfill Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. Accepts argument supported as method in function \code{\link[rtsa]{rtsa.gapfill}}
+#' is set raster mask is computed to remove all pixels with incomplete time series.
+#' @param nu Numeric. Defines the number of EOFs to return. Defaults to return the full set of EOFs.
+#' @param gapfill Character. Defines the algorithm to be used to interpolate pixels with incomplete temporal profiles. Accepts argument supported as method in function \code{\link[rtsa]{rtsa.gapfill}}.
 #' @param cores Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for singlecore processing. Applies only to the masking step.
-#' @param ... Additional arguments to be passed through to function \code{\link[sinkr]{eof}}
+#' @param centered Logical. If TRUE center the input data before EOF computation. Argument is passed through to function \code{\link[sinkr]{eof}}.
+#' @param scaled Logical. If TRUE scale the input data before EOF computation. Argument is passed through to function \code{\link[sinkr]{eof}}.
+#' @param ... Additional arguments to be passed through to function \code{\link[sinkr]{eof}}.
 #' 
-#' @return Object of class \code{\link{EOFstack}} containing the following components:
+#' @return Object of class \code{\linkS4class{EOFstack}} containing the following components:
 #' \tabular{rll}{
 #' \tab \code{eof.modes} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
 #' \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr
