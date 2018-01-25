@@ -8,7 +8,7 @@
 #
 #' Class "EOFstack"
 #'  
-#' @name EOFstack
+#' @name EOFstack-class
 #' @description Result from \code{\link[rtsa]{rtsa.eof}} stored as a \code{\linkS4class{EOFstack}} object.
 #' Slots for \code{EOFstack} objects include:
 #' \itemize{
@@ -40,7 +40,7 @@ NULL
 
 #' Class "EOTstack"
 #' 
-#' @name EOTstack
+#' @name EOTstack-class
 #' @description Result from \code{\link[rtsa]{rtsa.eot}} stored as a \code{\linkS4class{EOTstack}} object.
 #' Slots for \code{EOTstack} objects include: 
 #' \itemize{
@@ -80,7 +80,7 @@ NULL
 
 #' Class "STDstack"
 #' 
-#' @name STDstack
+#' @name STDstack-class
 #' @description Result from \code{\link[rtsa]{rtsa.stl}} and \code{\link[rtsa]{rtsa.seas}} stored as a \code{\linkS4class{STDstack}} object.
 #' Slots for \code{STDstack} objects include: 
 #' \itemize{
@@ -122,7 +122,7 @@ NULL
 
 #' Class "MKstack"
 #' 
-#' @name MKstack
+#' @name MKstack-class
 #' @description Result from \code{\link[rtsa]{rtsa.mk}} stored as a \code{\linkS4class{MKstack}} object.
 #' Slots for \code{MKstack} objects include: 
 #' \itemize{
@@ -148,24 +148,24 @@ setClass("MKstack",
 
 NULL
  
-#' Class "SOMstack"
-#' 
-#' @name SOMstack
-#' @description Result from \code{\link[rtsa]{rtsa.som}} stored as a \code{\linkS4class{SOMstack}} object.
-#' Slots for \code{SOMstack} objects include: 
-#' \itemize{
-#' \item \emph{som}: the spatial representation of resulting SOMs;
-#' \item \emph{bmu}: Best Matching Unit for each input temporal observation.
-#' }
-#' @docType class
-#' @section Objects from the class: Objects are created by calls to \code{\link[rtsa]{rtsa.som}}.
-#' @seealso \code{\link[rtsa]{rtsa.som}}
-#'
-#' @exportClass SOMstack
-#' @rdname SOMstack-class
-
-setClass("SOMstack",
-         representation(som="RasterBrick",
-                        bmu="xts"),
-         prototype=prototype(som=NULL, bmu=NULL)
-)
+# #' Class "SOMstack"
+# #' 
+# #' @name SOMstack-class
+# #' @description Result from \code{\link[rtsa]{rtsa.som}} stored as a \code{\linkS4class{SOMstack}} object.
+# #' Slots for \code{SOMstack} objects include: 
+# #' \itemize{
+# #' \item \emph{som}: the spatial representation of resulting SOMs;
+# #' \item \emph{bmu}: Best Matching Unit for each input temporal observation.
+# #' }
+# #' @docType class
+# #' @section Objects from the class: Objects are created by calls to \code{\link[rtsa]{rtsa.som}}.
+# #' @seealso \code{\link[rtsa]{rtsa.som}}
+# #'
+# #' @exportClass SOMstack
+# #' @rdname SOMstack-class
+# 
+# setClass("SOMstack",
+#          representation(som="RasterBrick",
+#                         bmu="xts"),
+#          prototype=prototype(som=NULL, bmu=NULL)
+# )

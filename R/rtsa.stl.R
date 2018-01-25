@@ -29,10 +29,10 @@
 #' @param t.degree Integer. Argument to be passed to function \code{\link[stlplus]{stlplus}}. Degree of locally-fitted polynomial in trend extraction.
 #' Should be 0, 1 (default) or 2.
 #' @param only.statistics Logical. If TRUE returns only the statistics from seasonal, trend and remainder components.
-#' @param keep.original Logical. If TRUE returns the original raster time series values in the 'rts' slot of \code{\linkS4class{STDstack}} object.
+#' @param keep.original Logical. If TRUE returns the original raster time series values in the 'rts' slot of \code{\link{STDstack-class}} object.
 #' @param ... Additional arguments to be passed through to function \code{\link[stlplus]{stlplus}}.
 #' 
-#' @return Object of class \code{\link{STDstack}} containing the following components:
+#' @return Object of class \code{\link{STDstack-class}} containing the following components:
 #' \tabular{rll}{
 #' \tab \code{std} \tab Seasonal Trend Decomposition method used\cr
 #' \tab \code{mask} \tab Final raster mask of computed pixels as \code{\linkS4class{RasterLayer}} object\cr

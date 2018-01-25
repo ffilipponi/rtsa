@@ -22,7 +22,7 @@
 #' Supports one or more of the following: 'all', 'r_predictor', 'rsq_predictor', 'rsq_sums_predictor', 'int_predictor', 'slp_predictor', 'p_predictor'.
 #' @param ... Additional arguments to be passed through to function \code{\link[remote]{eot}}.
 #' 
-#' @return Object of class \code{\link{EOTstack}} containing the following components:
+#' @return Object of class \code{\link{EOTstack-class}} containing the following components:
 #' \tabular{rll}{
 #' \tab \code{eot} \tab EOT temporal profiles corresponding to base point coordinates as \code{\linkS4class{xts}} object\cr
 #' \tab \code{total_variance} \tab Numeric. Total explained variance of input raster time series by the entire set of computed EOTs\cr

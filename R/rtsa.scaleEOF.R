@@ -11,11 +11,11 @@
 #' @description This function rescale resulting spatial modes generated from Empirical Orthogonal Function analysis (EOF)
 #' in the range between -1 and 1
 #' 
-#' @param x Input \code{\linkS4class{EOFStack}} object generated using \code{\link[rtsa]{rtsa.eof}}
+#' @param x Input \code{\link{EOFstack-class}} object generated using \code{\link[rtsa]{rtsa.eof}}
 #' @param cut Numeric. Defines the percentile to be used to scale each EOFs. Default is set to 1 (1st and 99th percentiles)
 #' @param method Character. Method used to scale EOF modes. Only default \code{"percentile"} is supported
 #' 
-#' @return Updates the 'eof' slot in the object of class \code{\linkS4class{EOFstack}} containing the following components:
+#' @return Updates the 'eof' slot in the object of class \code{\link{EOFstack-class}} containing the following components:
 #' \tabular{lll}{
 #' \tab \code{eof} \tab Scaled EOF modes as \code{\linkS4class{RasterBrick}} object\cr
 #' \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr

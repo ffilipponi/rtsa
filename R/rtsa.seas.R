@@ -20,10 +20,10 @@
 #' @param cores Integer. Defines the number of CPU to be used for multicore processing. Default to "1" core for 
 #' singlecore processing.
 #' @param only.statistics Logical. If TRUE returns only the statistics from seasonal, trend and remainder components.
-#' @param keep.original Logical. If TRUE returns the original raster time series values in the 'rts' slot of \code{\linkS4class{STDstack}} object.
+#' @param keep.original Logical. If TRUE returns the original raster time series values in the 'rts' slot of \code{\link{STDstack-class}} object.
 #' @param ... Additional arguments to be passed through to function \code{\link[seasonal]{seas}}.
 #' 
-#' @return Object of class \code{\link{STDstack}} containing the following components:
+#' @return Object of class \code{\link{STDstack-class}} containing the following components:
 #' \tabular{rll}{
 #' \tab \code{std} \tab Seasonal Trend Decomposition method used\cr
 #' \tab \code{mask} \tab Final raster mask of computed pixels as \code{\linkS4class{RasterLayer}} object\cr
