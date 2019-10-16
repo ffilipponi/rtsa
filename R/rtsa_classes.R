@@ -34,7 +34,7 @@ setClass("EOFstack",
                         mask="RasterLayer",
                         center="RasterLayer",
                         scale="RasterLayer"),
-         prototype=prototype(eof=NULL, expansion_coefficients=NULL, total_variance=NULL, explained_variance=NULL, center=NULL, scale=NULL)
+         prototype=prototype(eof=NULL, expansion_coefficients=NULL, total_variance=NULL, explained_variance=NULL, mask=NULL, center=NULL, scale=NULL)
 )
 
 NULL
@@ -75,7 +75,7 @@ setClass("EOTstack",
                         int_predictor="RasterBrick",
                         slp_predictor="RasterBrick",
                         p_predictor="RasterBrick"),
-         prototype=prototype(eot=NULL, total_variance=NULL, explained_variance=NULL, coords_bp=NULL, r_predictor=NULL, rsq_predictor=NULL, rsq_sums_predictor=NULL, int_predictor=NULL, slp_predictor=NULL, p_predictor=NULL)
+         prototype=prototype(eot=NULL, total_variance=NULL, explained_variance=NULL, coords_bp=NULL, mask=NULL, r_predictor=NULL, rsq_predictor=NULL, rsq_sums_predictor=NULL, int_predictor=NULL, slp_predictor=NULL, p_predictor=NULL)
 )
 
 NULL
@@ -117,7 +117,7 @@ setClass("STDstack",
                         trend="RasterBrickTS",
                         seasonaladjtrend="RasterBrickTS",
                         remainder="RasterBrickTS"),
-         prototype=prototype(std=NULL, rts=NULL, seasonality=NULL, trend=NULL, seasonaladjtrend=NULL, remainder=NULL)
+         prototype=prototype(std=NULL, mask=NULL, rts=NULL, seasonality=NULL, trend=NULL, seasonaladjtrend=NULL, remainder=NULL)
 )
 
 NULL
