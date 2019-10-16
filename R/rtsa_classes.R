@@ -1,6 +1,6 @@
 # title         : Classes for the 'rtsa' package
-# Date          : Jan 2018
-# Version       : 0.2
+# Date          : Oct 2019
+# Version       : 0.3
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 #
@@ -27,14 +27,14 @@
 #' @rdname EOFstack-class
 
 setClass("EOFstack",
-         representation(eof.modes="RasterBrick",
+         representation(eof="RasterBrick",
                         expansion_coefficients="xts",
                         total_variance="numeric",
                         explained_variance="numeric",
                         mask="RasterLayer",
                         center="RasterLayer",
                         scale="RasterLayer"),
-         prototype=prototype(eof.modes=NULL, expansion_coefficients=NULL, total_variance=NULL, explained_variance=NULL, center=NULL, scale=NULL)
+         prototype=prototype(eof=NULL, expansion_coefficients=NULL, total_variance=NULL, explained_variance=NULL, center=NULL, scale=NULL)
 )
 
 NULL
@@ -68,6 +68,7 @@ setClass("EOTstack",
                         total_variance="numeric",
                         explained_variance="numeric",
                         coords_bp="matrix",
+                        mask="RasterLayer",
                         r_predictor="RasterBrick",
                         rsq_predictor="RasterBrick",
                         rsq_sums_predictor="RasterBrick",
