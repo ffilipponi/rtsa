@@ -1,3 +1,13 @@
+rtsa v0.3 (Release date: 2019-10-16)
+==============
+
+Changes:
+
+* Added mask slot in 'EOFstack' object class (thanks RobelTakele for the fix)
+* Added mask slot in 'EOTstack' object class
+* Added mask raster name in in 'STDstack' object class
+* Bug fix in function 'rtsa.eof' when computing only masked pixel values
+
 rtsa v0.2 (Release date: 2018-01-25)
 ==============
 
