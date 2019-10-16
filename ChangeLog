@@ -1,6 +1,13 @@
 --- to do
 
 --- current version
+--16-October-2019, version 0.3
+Added mask slot in 'EOFstack' object class (thanks RobelTakele for the fix)
+Added mask slot in 'EOTstack' object class
+Added mask raster name in in 'STDstack' object class
+Bug fix in function 'rtsa.eof' when computing only masked pixel values
+
+--- current version
 --25-January-2018, version 0.2
 Added function 'rtsa.eot' to compute Empirical Orthogonal Teleconnections
 Added function 'rtsa.stl' to compute Seasonal Trend Decomposition using Loess
