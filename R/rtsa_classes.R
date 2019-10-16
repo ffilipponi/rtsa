@@ -31,6 +31,7 @@ setClass("EOFstack",
                         expansion_coefficients="xts",
                         total_variance="numeric",
                         explained_variance="numeric",
+                        mask="RasterLayer",
                         center="RasterLayer",
                         scale="RasterLayer"),
          prototype=prototype(eof.modes=NULL, expansion_coefficients=NULL, total_variance=NULL, explained_variance=NULL, center=NULL, scale=NULL)
