@@ -1,6 +1,6 @@
 # title         : Empirical Orthogonal Function analysis of raster time series
-# Date          : Jan 2018
-# Version       : 0.2
+# Date          : Oct 2019
+# Version       : 0.3
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 #
@@ -23,10 +23,11 @@
 #' 
 #' @return Object of class \code{\linkS4class{EOFstack}} containing the following components:
 #' \tabular{rll}{
-#' \tab \code{eof.modes} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
+#' \tab \code{eof} \tab EOF modes as \code{\linkS4class{RasterBrick}} object\cr
 #' \tab \code{expansion_coefficients} \tab EOF Expansion Coefficients (EC) as \code{\linkS4class{xts}} object\cr
 #' \tab \code{total_variance} \tab Numeric. Total variance of input raster time series\cr
 #' \tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOF mode with respect to the total variance of input raster time series\cr
+#' \tab \code{mask} \tab Raster mask layer \code{\linkS4class{RasterLayer}} object\cr
 #' \tab \code{center} \tab Center values from each pixel temporal profile as \code{\linkS4class{RasterLayer}} object (only computed if \code{centered = TRUE})\cr
 #' \tab \code{scale} \tab Scale values from each pixel temporal profile as \code{\linkS4class{RasterLayer}} object (only computed if \code{scaled = TRUE})
 #' }
@@ -266,6 +267,7 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   
   # create output raster
   eof_dataset <- brick(rasterts@raster[[1:nu]])
+  values(eof_dataset) <- NA
   eof_dataset[na_index_mask] <- eofresult$u ### check if this can be optimized by creating a matrix with the same dimension of the raster data slot
   # generate EOF band names
   eof_names <- as.character(rep(0, nu))
@@ -284,7 +286,7 @@ rtsa.eof <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", centere
   # assemble results in a object of class 'EOFstack'
   eofreturn <- new("EOFstack")
   eofreturn@mask <- void_raster
-  eofreturn@eof.modes <- eof_dataset
+  eofreturn@eof <- eof_dataset
   eofreturn@expansion_coefficients <- eof.ec
   eofreturn@total_variance <- total_variance
   eofreturn@explained_variance <- explained_variance

@@ -1,6 +1,6 @@
 # title         : Seasonal Trend Decomposition using Loess (STL) of raster time series
-# Date          : Jan 2018
-# Version       : 0.2
+# Date          : Oct 2019
+# Version       : 0.3
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 #
@@ -448,6 +448,7 @@ rtsa.stl <- function(rasterts, rastermask=NULL, gapfill="none", cores=1L, n.p=NU
   names(void_raster) <- validNames("mask")
   values(void_raster) <- 0
   void_raster[na_index_mask] <- 1
+  names(void_raster) <- validNames("mask")
   stlreturn@mask <- void_raster
   values(void_raster) <- NA
   

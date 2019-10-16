@@ -1,6 +1,6 @@
 # title         : Empirical Orthogonal Teleconnection analysis of raster time series
-# Date          : Jan 2018
-# Version       : 0.2
+# Date          : Oct 2019
+# Version       : 0.3
 # Licence       : GPL v3
 # Maintainer    : Federico Filipponi <federico.filipponi@gmail.com>
 #
@@ -27,6 +27,8 @@
 #' \tab \code{eot} \tab EOT temporal profiles corresponding to base point coordinates as \code{\linkS4class{xts}} object\cr
 #' \tab \code{total_variance} \tab Numeric. Total explained variance of input raster time series by the entire set of computed EOTs\cr
 #' \tab \code{explained_variance} \tab Numeric vector. Percentage of variance explained by each EOT mode with respect to the total variance of input raster time series\cr
+#' \tab \code{coords.bp} \tab Matrix object containing the coordinates of the identified base point;\cr
+#' \tab \code{mask} \tab Raster mask layer \code{\linkS4class{RasterLayer}} object\cr
 #' \tab \code{r_predictor} \tab RasterBrick. Correlation coefficients between the base point and each pixel of the predictor domain as \code{\linkS4class{RasterBrick}} object (only exported if \code{predictor = "all"} or \code{predictor = "r_predictor"})\cr
 #' \tab \code{rsq_predictor} \tab RasterBrick. Coefficient of determination between the base point and each pixel of the predictor domain as \code{\linkS4class{RasterBrick}} object (only exported if \code{predictor = "all"} or \code{predictor = "rsq_predictor"})\cr
 #' \tab \code{rsq_sums_predictor} \tab RasterBrick. Sums of correlation coefficients between the base point and each pixel of the predictor domain as \code{\linkS4class{RasterBrick}} object (only exported if \code{predictor = "all"} or \code{predictor = "rsq_sums_predictor"})\cr
@@ -291,6 +293,13 @@ rtsa.eot <- function(rasterts, rastermask=NULL, nu=NULL, gapfill="none", predict
   # create empty raster stack dataset
   eot_dataset_void <- rasterts@raster[[1:nu]]
   values(eot_dataset_void) <- as.vector(rep(NA, ncell(rasterts)*nu))
+  
+  # create mask layer
+  eot_mask <- rasterts@raster[[1]]
+  values(eot_mask) <- 0
+  eot_mask[na_index_mask] <- 1
+  names(eot_mask) <- validNames("mask")
+  eotreturn@mask <- eot_mask
   
   # mask eot r_predictor result
   if(as.logical(sum(predictor %in% c("all", "r_predictor")))){
