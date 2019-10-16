@@ -1,6 +1,6 @@
 Package: rtsa
-Version: 0.2
-Date: 2018-01-25
+Version: 0.3
+Date: 2019-10-16
 Title: Raster Time Series Analysis
 Authors@R: c(person("Federico", "Filipponi", role = c("aut", "cre"),
                      email = "federico.filipponi@gmail.com"))
